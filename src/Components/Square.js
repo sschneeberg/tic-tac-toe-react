@@ -2,15 +2,24 @@ import React from "react";
 import "../index.css";
 
 class Square extends React.Component {
+  //initialized state
+  constructor(props) {
+    //always call super(props) for components with a constructor function
+    super(props);
+    this.state = {
+      value: null,
+    };
+  }
+
   render() {
     return (
       <button
         className="square"
-        onClick={function () {
-          alert("click");
+        onClick={() => {
+          this.setState({ value: "X" });
         }}
       >
-        {this.props.value}
+        {this.state.value}
       </button>
     );
   }
