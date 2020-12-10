@@ -10,7 +10,8 @@ class Game extends React.Component {
         this.state = {
             history: [{ squares: Array(9).fill(null) }],
             stepNumber: 0,
-            xIsNext: true
+            xIsNext: true,
+            winCond: []
         };
     }
 
@@ -18,7 +19,8 @@ class Game extends React.Component {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
-        if (calculateWinner(squares) || squares[i]) {
+        const winner = calculateWinner(current.squares)[0];
+        if (winner || squares[i]) {
             return;
         }
         squares[i] = this.state.xIsNext ? 'X' : '0';
@@ -32,15 +34,15 @@ class Game extends React.Component {
     jumpTo(step) {
         this.setState({
             stepNumber: step,
-            xIsNext: step % 2 === 0
+            xIsNext: step % 2 === 0,
+            winCond: []
         });
     }
 
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
-        const winner = calculateWinner(current.squares);
-
+        const [winner, winCond] = calculateWinner(current.squares);
         const moves = history.map((step, move) => {
             const desc = move ? 'Go to move #' + move : 'Restart Game';
             return (
@@ -53,6 +55,10 @@ class Game extends React.Component {
         let status;
         if (winner) {
             status = 'Winner: ' + winner;
+            console.log(this.state.winCond.length === 0);
+            if (this.state.winCond.length === 0) {
+                this.setState({ winCond: winCond });
+            }
         } else if (calculateTie(current.squares)) {
             status = 'Tie';
         } else {
@@ -62,6 +68,7 @@ class Game extends React.Component {
             <div className="game">
                 <div className="game-board">
                     <Board
+                        winCond={this.state.winCond}
                         squares={current.squares}
                         onClick={(i) => this.handleClick(i)}
                     />
